@@ -13,3 +13,15 @@ Route.get('test_db_connections', async ({ response }: HttpContextContract) => {
     return response.status(500).json({ message })
   })
 })
+
+Route.group(() => {
+  Route.post('login', 'AuthController.login')
+
+  Route.post('users/', 'UsersController.store')
+}).prefix('v1/api')
+
+Route.group(() => {
+  Route.resource('users/', 'UsersController').only(['update', 'index', 'show', 'destroy'])
+})
+  .prefix('v1/api')
+  .middleware(['auth', 'is:admin'])
