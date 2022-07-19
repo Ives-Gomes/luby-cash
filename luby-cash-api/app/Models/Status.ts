@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeCreate, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { v4 as uuidv4 } from 'uuid'
 
 import User from './User'
+import Role from './Role'
 
 export default class Status extends BaseModel {
   @column({ isPrimary: true })
@@ -21,4 +23,9 @@ export default class Status extends BaseModel {
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
+
+  @beforeCreate()
+  public static assignUuid(role: Role) {
+    role.secureId = uuidv4()
+  }
 }
