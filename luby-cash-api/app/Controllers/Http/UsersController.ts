@@ -157,7 +157,8 @@ export default class UsersController {
     await request.validate(UpdateValidator)
 
     const userSecureId = params.id
-    const bodyUser = request.only(['name', 'cpf', 'email', 'password', 'role', 'monthlyIncome'])
+    const bodyUser = request.only(['full_name', 'cpf', 'email', 'password', 'monthlyIncome'])
+    const bodyRole = request.only(['role'])
 
     let userUpdated
 
@@ -167,6 +168,11 @@ export default class UsersController {
       userUpdated = await User.findByOrFail('secure_id', userSecureId)
 
       userUpdated.useTransaction(trx)
+
+      if (bodyRole.role) {
+        const role = await Role.findBy('name', bodyRole.role)
+        if (role) await userUpdated.related('roles').attach([role.id], trx)
+      }
 
       await userUpdated.merge(bodyUser).save()
     } catch (error) {

@@ -42,7 +42,7 @@ export default class StoreValidator extends MessagesCustom {
       }),
     ]),
     password: schema.string.optional({ trim: true }, [rules.maxLength(50)]),
-    role: schema.string.optional({ trim: true }, [rules.required()]),
+    role: schema.string.optional({ trim: true }, []),
     monthlyIncome: schema.number.optional([rules.unsigned()]),
   })
 }
