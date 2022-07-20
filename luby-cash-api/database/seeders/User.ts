@@ -11,6 +11,7 @@ export default class extends BaseSeeder {
       cpf: '000.000.000-00',
       email: 'admin@email.com',
       password: 'secret',
+      statusId: 2,
     })
     const roleAdmin = await Role.findBy('name', 'admin')
     if (roleAdmin) await userAdmin.related('roles').attach([roleAdmin.id])
@@ -21,6 +22,7 @@ export default class extends BaseSeeder {
       cpf: '000.000.000-01',
       email: 'client@email.com',
       password: 'secret',
+      statusId: 1,
     })
     const roleClient = await Role.findBy('name', 'client')
     if (roleClient) await userClient.related('roles').attach([roleClient.id])

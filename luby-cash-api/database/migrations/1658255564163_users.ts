@@ -7,6 +7,13 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').unsigned().unique().notNullable()
       table.uuid('secure_id').unique().notNullable()
+      table
+        .integer('status_id')
+        .unsigned()
+        .references('id')
+        .inTable('statuses')
+        .notNullable()
+        .onDelete('CASCADE')
 
       table.string('full_name', 50).notNullable()
       table.string('cpf', 14).unique().notNullable()

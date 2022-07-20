@@ -22,6 +22,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.resource('users/', 'UsersController').only(['update', 'index', 'show', 'destroy'])
+  Route.post('usersAdmin/', 'UsersController.storeAdmin')
 })
   .prefix('v1/api')
   .middleware(['auth', 'is:admin'])
