@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
+import { Kafka } from 'kafkajs'
 
 import User from 'App/Models/User'
 import Role from 'App/Models/Role'
@@ -99,6 +100,47 @@ export default class UsersController {
         originalError: error.message,
       })
     }
+
+    const kafka = new Kafka({
+      clientId: 'luby-cash-api',
+      brokers: ['localhost:9092'],
+      enforceRequestTimeout: false,
+    })
+
+    const admin = kafka.admin()
+    const producer = kafka.producer()
+
+    await admin.connect()
+    await producer.connect()
+
+    await admin.createTopics({
+      validateOnly: false,
+      waitForLeaders: true,
+      timeout: 15000,
+      topics: [
+        {
+          topic: 'luby-cash-topic',
+          numPartitions: 6,
+          replicationFactor: -1,
+          replicaAssignment: [],
+          configEntries: [],
+        },
+      ],
+    })
+
+    const responseKafka = await admin.listTopics()
+
+    console.log(responseKafka)
+
+    const kafkaResponse = await producer.send({
+      topic: 'luby-cash-topic',
+      messages: [{ key: '1', value: user.toString(), partition: 0 }],
+    })
+
+    console.log(kafkaResponse)
+
+    await producer.disconnect()
+    await admin.disconnect()
 
     trx.commit()
 
