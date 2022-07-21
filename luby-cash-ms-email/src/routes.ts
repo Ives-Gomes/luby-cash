@@ -1,10 +1,11 @@
 import express from 'express';
-import { Request, Response } from 'express';
+
+import ClientsController from './controllers/ClientsController';
 
 const routes = express.Router();
 
-routes.get('/users', async (req: Request, res: Response) => {
-  res.send({ message: 'Microservice is coming...' });
-});
+const clientsController = new ClientsController();
+
+routes.get('/clients', clientsController.index);
 
 export default routes;
