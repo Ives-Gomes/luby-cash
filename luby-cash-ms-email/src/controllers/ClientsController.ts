@@ -48,6 +48,33 @@ class ClientsController {
       sendMail('Você não foi aceito.');
     }
   }
+
+  async pix(req: Request, res: Response) {
+    try {
+      const { from, to, value } = req.body;
+
+      const fromClientBalance: any = await knex('clients').select('balance').where('secure_id', from);
+      const toClientBalance: any = await knex('clients').select('balance').where('secure_id', to);
+
+      await knex('clients').update({ 
+        balance: Number(fromClientBalance[0].balance) - value,
+      }).where('secure_id', from);
+
+      await knex('clients').update({ 
+        balance: Number(toClientBalance[0].balance) + value,
+      }).where('secure_id', to);
+
+      const fromClient = await knex('clients').select('*').where('secure_id', from);
+      const toClient = await knex('clients').select('*').where('secure_id', to);
+
+      return res.status(200).send({
+        fromClient,
+        toClient,
+      })
+    } catch (err) {
+      res.status(400).send({ message: 'Bad request' })
+    }
+  }
 }
 
 export default ClientsController;
