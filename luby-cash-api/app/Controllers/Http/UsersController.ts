@@ -134,7 +134,7 @@ export default class UsersController {
 
     const kafkaResponse = await producer.send({
       topic: 'luby-cash-topic',
-      messages: [{ key: '1', value: user.toString(), partition: 0 }],
+      messages: [{ key: '1', value: JSON.stringify(user), partition: 0 }],
     })
 
     console.log(kafkaResponse)

@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
+import { v4 as uuidv4 } from 'uuid'
 
 import { Client } from '@interfaces/ClientInterfaces';
+import { User } from '@interfaces/UserInterfaces';
 
 import api from '../shared/services/api';
+import sendMail from '../shared/services/mails';
 
 class ClientsController {
   async index(req: Request, res: Response) {
@@ -27,6 +30,22 @@ class ClientsController {
       return res.status(200).send(serializedClients);
     } catch (err: any) {
       throw new Error(err);
+    }
+  }
+
+  async create(user: User) { 
+    if (user.monthly_income >= 500) {
+      sendMail('Você foi aprovado!');
+
+      const createdClient = await knex('clients').insert({
+        secure_id: uuidv4(), 
+        user_id: user.secure_id, 
+        balance: 200,
+      });
+  
+      return createdClient;
+    } else {
+      sendMail('Você não foi aceito, mas pode tentar novamente.');
     }
   }
 }
