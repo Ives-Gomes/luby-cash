@@ -34,7 +34,7 @@ class ClientsController {
   }
 
   async create(user: User) { 
-    if (user.monthly_income >= 500) {
+    if (user.monthly_income >= 500 && user.status_id !== 3) {
       sendMail('Você foi aprovado!');
 
       const createdClient = await knex('clients').insert({
@@ -45,7 +45,7 @@ class ClientsController {
   
       return createdClient;
     } else {
-      sendMail('Você não foi aceito, mas pode tentar novamente.');
+      sendMail('Você não foi aceito.');
     }
   }
 }
