@@ -3,19 +3,31 @@ import knex from '../database/connection';
 
 import { Client } from '@interfaces/ClientInterfaces';
 
+import api from '../shared/services/api';
+
 class ClientsController {
   async index(req: Request, res: Response) {
-    const clients = await knex('clients').select('*');
+    try {
+      const clients = await knex('clients').select('*');
+      
+      const serializedClients: any = {};
 
-    const serializedClients = clients.map((client: Client) => {
-      return {
-        id: client.id,
-        user_id: client.user_id,
-        balance: client.balance
-      };
-    });
+      await Promise.all(
+        clients.map(async (client: Client, index) => {
+          const user = await api.get(`users/${client.user_id}`);
+  
+          serializedClients[index] = {
+            id: client.id,
+            user: user.data,
+            balance: client.balance
+          };
+        })
+      )
 
-    return res.json(serializedClients);
+      return res.status(200).send(serializedClients);
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }
 

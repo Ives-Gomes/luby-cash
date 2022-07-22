@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id').unsigned().unique().notNullable()
     table.uuid('secure_id').unique().notNullable()
 
-    table.integer('user_id').unsigned().notNullable()
+    table.uuid('user_id').unique().notNullable()
     table.float('balance', 9, 2).defaultTo(0).unsigned().notNullable()
 
     table.timestamp('created_at', { useTz: true })

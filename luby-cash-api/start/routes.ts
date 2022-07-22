@@ -17,11 +17,11 @@ Route.get('test_db_connections', async ({ response }: HttpContextContract) => {
 Route.group(() => {
   Route.post('login', 'AuthController.login')
 
-  Route.post('users/', 'UsersController.store')
+  Route.resource('users/', 'UsersController').only(['show', 'store'])
 }).prefix('v1/api')
 
 Route.group(() => {
-  Route.resource('users/', 'UsersController').only(['update', 'index', 'show', 'destroy'])
+  Route.resource('users/', 'UsersController').only(['update', 'index', 'destroy'])
   Route.post('usersAdmin/', 'UsersController.storeAdmin')
 })
   .prefix('v1/api')
